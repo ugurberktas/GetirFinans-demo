@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetirFinans - GetirLoop</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">getirfinans</div>
+            <div class="profile-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-card">
+                <div class="balance-group">
+                    <span class="label">Toplam GetirVarlık</span>
+                    <div class="amount"><span id="total-balance">0</span> <span class="currency">TL</span></div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="loop-balance-group">
+                    <div class="icon-bg">
+                        <i class="fa-solid fa-infinity"></i>
+                    </div>
+                    <div class="info">
+                        <span class="label">GetirLoop ile Biriken</span>
+                        <span class="value" id="loop-total">0,00 TL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loop Toggle -->
+        <section class="loop-toggle-section">
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <span class="toggle-title">GetirLoop'u Aktif Et</span>
+                    <span class="toggle-desc">Harcamalarını yuvarla, birikim yap.</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Transactions -->
+        <section class="transactions-section">
+            <h2 class="section-title">Ekosistem Hareketleri</h2>
+            <div id="transaction-list" class="transaction-list">
+                <!-- JS will inject items here -->
+            </div>
+        </section>
+
+        <!-- Spacer for fixed bottom nav -->
+        <div class="nav-spacer"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Ana Sayfa</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Cüzdan</span>
+        </a>
+        <a href="#" class="nav-item active-main" id="simulate-btn">
+            <div class="main-btn">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span>GetirLoop</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
