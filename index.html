@@ -1,105 +1,697 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GetirFinans - GetirLoop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GetirFinans - GetirLoop Pro</title>
 
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
-</head>
+    <style>
+        /* ===== CSS BAŞLANGIÇ ===== */
+        :root {
+            --getir-purple: #5D3EB2;
+            --getir-purple-light: #7B5DC9;
+            --getir-purple-dark: #4C1D95;
+            --getir-light: #F3F0FF;
+            --accent-yellow: #FCD34D;
+            --accent-orange: #FF6B35;
+            --text-main: #1F1F1F;
+            --text-secondary: #6B7280;
+            --bg-gray: #F5F7FA;
+            --success-green: #10B981;
+            --white: #FFFFFF;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e; /* Masaüstü arka planı */
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Scroll body'de değil container'da olacak */
+        }
+
+        /* Ana Uygulama Çerçevesi */
+        .app-container {
+            width: 100%;
+            max-width: 480px; /* Genişliği biraz artırdım, daha ferah olsun */
+            height: 100vh;
+            max-height: 100vh;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Scrollable Area */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 100px; /* Navigasyon payı */
+        }
+        .app-content::-webkit-scrollbar { width: 0; }
+
+        /* Header */
+        .app-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--getir-purple) 0%, var(--getir-purple-dark) 100%);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .logo { font-size: 22px; font-weight: 700; color: white; letter-spacing: -0.5px; }
+        .profile-icon {
+            width: 36px; height: 36px; background-color: rgba(255,255,255,0.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; backdrop-filter: blur(5px);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--getir-purple) 0%, var(--getir-purple-dark) 100%);
+            padding: 0 24px 60px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            border-radius: 0 0 30px 30px;
+        }
+        .welcome-text .greeting { font-size: 13px; color: rgba(255,255,255,0.7); }
+        .welcome-text .user-name { font-size: 20px; font-weight: 600; color: white; margin-top: 4px; }
+        .settings-btn {
+            width: 36px; height: 36px; background-color: rgba(255,255,255,0.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; cursor: pointer; transition: 0.3s;
+        }
+        .settings-btn:active { transform: rotate(90deg); }
+
+        /* Hero Card */
+        .hero-section { padding: 0 24px; margin-top: -40px; position: relative; z-index: 5; }
+        .hero-card {
+            background: white; border-radius: 24px; padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .balance-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .balance-group .label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+        .balance-group .amount { font-size: 32px; font-weight: 700; color: var(--text-main); letter-spacing: -1px; }
+        .divider { height: 1px; background-color: #E5E7EB; margin: 20px 0; }
+        
+        .loop-balance-group { display: flex; align-items: center; gap: 16px; }
+        .icon-bg {
+            width: 48px; height: 48px; background-color: var(--getir-light);
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--getir-purple); position: relative;
+        }
+        .pending-dot {
+            position: absolute; top: -2px; right: -2px; width: 12px; height: 12px;
+            background-color: #EF4444; border: 2px solid white; border-radius: 50%;
+        }
+        .pending-dot.hidden { display: none; }
+        
+        .loop-balance-group .info { flex: 1; display: flex; flex-direction: column; }
+        .label-small { font-size: 10px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; }
+        .value-row { display: flex; align-items: baseline; gap: 8px; margin-top: 2px; }
+        .loop-balance-group .value { font-size: 16px; font-weight: 600; }
+        .pending-text { font-size: 11px; color: var(--text-secondary); }
+        .manage-btn {
+            background: none; border: none; color: var(--getir-purple); font-size: 13px;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;
+        }
+
+        /* Toggle Section */
+        .loop-toggle-section { padding: 24px; }
+        .toggle-card {
+            background-color: white; border-radius: 16px; padding: 16px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        .toggle-title { font-weight: 600; font-size: 15px; display: block; }
+        .toggle-desc { font-size: 12px; color: var(--text-secondary); }
+        
+        /* Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E5E7EB; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--success-green); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Fund Section */
+        .fund-section { padding: 0 24px 8px; }
+        .fund-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .fund-item {
+            background: white; padding: 16px 10px; border-radius: 16px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid transparent; transition: 0.2s;
+        }
+        .fund-item:active { transform: scale(0.98); }
+        .fund-icon {
+            width: 44px; height: 44px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 18px;
+        }
+        .fund-name { font-size: 12px; font-weight: 600; }
+        .fund-icon.green { background: #D1FAE5; color: #059669; }
+        .fund-icon.yellow { background: #FEF3C7; color: #D97706; }
+        .fund-icon.purple { background: #EDE9FE; color: #7C3AED; }
+
+        /* Transactions */
+        .transactions-section { padding: 24px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+        .transaction-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .transaction-item {
+            display: flex; align-items: center; padding: 16px;
+            background-color: white; border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-left: 4px solid transparent; /* Default border */
+        }
+        .transaction-item.spend { border-left-color: var(--text-secondary); }
+        .transaction-item.investment { border-left-color: var(--getir-purple); background-color: #F8F6FF; }
+
+        .t-icon {
+            width: 48px; height: 48px; border-radius: 14px; display: flex;
+            align-items: center; justify-content: center; font-size: 20px;
+            margin-right: 16px; flex-shrink: 0;
+        }
+        
+        /* Özel Marka Renkleri */
+        .t-icon.brand-getir { background-color: #F3F0FF; color: #5D3EB2; }
+        .t-icon.brand-taxi { background-color: #FFFBEB; color: #F59E0B; }
+        .t-icon.brand-food { background-color: #FEF2F2; color: #EF4444; }
+        .t-icon.brand-market { background-color: #ECFDF5; color: #10B981; }
+        .t-icon.brand-tech { background-color: #EFF6FF; color: #3B82F6; }
+
+        .t-info { flex: 1; }
+        .t-merchant { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+        .t-meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); }
+        
+        .t-kumbara {
+            font-size: 10px; font-weight: 600; color: var(--accent-orange);
+            background-color: #FFF7ED; padding: 3px 8px; border-radius: 6px;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+
+        .t-amount-group { text-align: right; }
+        .t-amount { font-weight: 700; font-size: 15px; display: block; margin-bottom: 2px; }
+        .t-card-type { font-size: 10px; color: var(--text-secondary); }
+
+        /* FAB Button */
+        .fab-button {
+            position: absolute; bottom: 100px; right: 24px;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--getir-purple) 0%, var(--getir-purple-dark) 100%);
+            color: white; border: none; font-size: 26px;
+            box-shadow: 0 6px 20px rgba(93, 62, 178, 0.4);
+            cursor: pointer; z-index: 90; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .fab-button:active { transform: scale(0.9); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 80px; background-color: white;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 100;
+            display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #f0f0f0;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-secondary); font-size: 10px; gap: 6px;
+            text-decoration: none; padding: 10px; flex: 1;
+        }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { color: var(--getir-purple); font-weight: 600; }
+
+        /* Modal / Bottom Sheet */
+        .modal-overlay { position: absolute; inset: 0; z-index: 1000; display: none; }
+        .modal-overlay.active { display: block; }
+        .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); animation: fadeIn 0.3s; }
+        .modal-sheet {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: white; border-radius: 24px 24px 0 0; padding: 24px;
+            max-height: 85%; overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-header h2 { font-size: 18px; font-weight: 700; }
+        .close-btn { background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+
+        /* Settings CSS */
+        .settings-group { background: #F9FAFB; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .limit-range { width: 100%; -webkit-appearance: none; height: 6px; background: #E5E7EB; border-radius: 10px; }
+        .limit-range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--getir-purple); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 6px rgba(93, 62, 178, 0.4); }
+        
+        /* Asset Selection */
+        .asset-option {
+            display: flex; align-items: center; padding: 12px; background: white;
+            border: 1px solid #E5E7EB; border-radius: 12px; margin-bottom: 8px; cursor: pointer;
+        }
+        .asset-option.selected { border-color: var(--getir-purple); background: var(--getir-light); }
+        
+        /* Quick Invest Card inside Modal */
+        .quick-invest-card {
+            background: linear-gradient(135deg, var(--getir-purple) 0%, var(--getir-purple-dark) 100%);
+            border-radius: 16px; padding: 20px; color: white; text-align: center; margin-top: 20px;
+        }
+        .invest-btn {
+            width: 100%; background: white; color: var(--getir-purple); border: none;
+            padding: 14px; border-radius: 12px; font-weight: 700; margin-top: 12px; cursor: pointer;
+        }
+
+        /* Toast */
+        .toast {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #1F2937; color: white; padding: 12px 20px; border-radius: 50px;
+            font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 2000;
+        }
+        .toast.visible { opacity: 1; top: 60px; }
+        .toast i { color: var(--success-green); }
+
+        /* Animations */
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .slide-in { animation: slideInLeft 0.4s ease forwards; }
+
+    </style>
+</head>
 <body>
 
     <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="logo">getirfinans</div>
-            <div class="profile-icon">
-                <i class="fa-solid fa-user"></i>
-            </div>
-        </header>
+        <div id="toast" class="toast">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="toast-msg">İşlem Başarılı</span>
+        </div>
 
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="hero-card">
-                <div class="balance-group">
-                    <span class="label">Toplam GetirVarlık</span>
-                    <div class="amount"><span id="total-balance">0</span> <span class="currency">TL</span></div>
+        <div class="app-content">
+            <header class="app-header">
+                <div class="logo">getirfinans</div>
+                <div class="profile-icon"><i class="fa-solid fa-user"></i></div>
+            </header>
+
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <p class="greeting">Tekrar Hoşgeldin,</p>
+                    <h1 class="user-name">Kullanıcı</h1>
                 </div>
+                <div class="settings-btn" onclick="toggleModal(true)">
+                    <i class="fa-solid fa-gear"></i>
+                </div>
+            </div>
 
-                <div class="divider"></div>
-
-                <div class="loop-balance-group">
-                    <div class="icon-bg">
-                        <i class="fa-solid fa-infinity"></i>
+            <section class="hero-section">
+                <div class="hero-card">
+                    <div class="balance-group">
+                        <div class="balance-header">
+                            <span class="label">Toplam GetirVarlık</span>
+                            <i class="fa-solid fa-eye" style="color:#9CA3AF;"></i>
+                        </div>
+                        <div class="amount"><span id="total-balance">0</span> <span class="currency">TL</span></div>
                     </div>
-                    <div class="info">
-                        <span class="label">GetirLoop ile Biriken</span>
-                        <span class="value" id="loop-total">0,00 TL</span>
+                    
+                    <div class="divider"></div>
+
+                    <div class="loop-balance-group">
+                        <div class="icon-bg">
+                            <i class="fa-solid fa-piggy-bank"></i>
+                            <div id="pending-dot" class="pending-dot hidden"></div>
+                        </div>
+                        <div class="info">
+                            <span class="label-small">GETIRLOOP</span>
+                            <div class="value-row">
+                                <span class="value" id="loop-invested">0,00 TL</span>
+                                <span class="pending-text" id="loop-pending">(Nakit: ₺0,00)</span>
+                            </div>
+                        </div>
+                        <button class="manage-btn" onclick="toggleModal(true)">
+                            Yönet <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Loop Toggle -->
-        <section class="loop-toggle-section">
-            <div class="toggle-card">
-                <div class="toggle-info">
-                    <span class="toggle-title">GetirLoop'u Aktif Et</span>
-                    <span class="toggle-desc">Harcamalarını yuvarla, birikim yap.</span>
+            <section class="loop-toggle-section">
+                <div class="toggle-card">
+                    <div class="toggle-info">
+                        <span class="toggle-title">GetirLoop Aktif</span>
+                        <span class="toggle-desc">Harcamalarını yuvarla, birikim yap.</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="main-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" checked>
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        </section>
+            </section>
 
-        <!-- Transactions -->
-        <section class="transactions-section">
-            <h2 class="section-title">Ekosistem Hareketleri</h2>
-            <div id="transaction-list" class="transaction-list">
-                <!-- JS will inject items here -->
-            </div>
-        </section>
+            <section class="fund-section">
+                <div class="fund-grid">
+                    <div class="fund-item" onclick="selectAsset('TI1')">
+                        <div class="fund-icon green"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="fund-info" style="text-align:center;">
+                            <span class="fund-name">TI1 Fonu</span>
+                        </div>
+                    </div>
+                    <div class="fund-item" onclick="selectAsset('GOLD')">
+                        <div class="fund-icon yellow"><i class="fa-solid fa-coins"></i></div>
+                        <span class="fund-name">Altın</span>
+                    </div>
+                    <div class="fund-item" onclick="selectAsset('ISCTR')">
+                        <div class="fund-icon purple"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <span class="fund-name">Hisse</span>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Spacer for fixed bottom nav -->
-        <div class="nav-spacer"></div>
+            <section class="transactions-section">
+                <h2 class="section-title">Hesap Hareketleri</h2>
+                <div id="transaction-list" class="transaction-list">
+                    </div>
+            </section>
+        </div>
+
+        <button class="fab-button" onclick="simulateSpend()">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i><span>Ana Sayfa</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Cüzdan</span></a>
+            <a href="#" class="nav-item" onclick="toggleModal(true)"><i class="fa-solid fa-chart-pie"></i><span>Yatırım</span></a>
+            <a href="#" class="nav-item"><i class="fa-regular fa-credit-card"></i><span>Kartlar</span></a>
+        </nav>
+
+        <div id="settings-modal" class="modal-overlay">
+            <div class="modal-backdrop" onclick="toggleModal(false)"></div>
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <h2>GetirLoop Ayarları</h2>
+                    <button class="close-btn" onclick="toggleModal(false)"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="settings-group">
+                    <div class="settings-row">
+                        <span style="font-weight:600;">Otomatik Fon Alımı</span>
+                        <label class="switch">
+                            <input type="checkbox" id="auto-invest-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <p style="font-size:12px; color:#6B7280; margin-bottom:12px;">Biriken nakit limitine ulaşınca otomatik yatırım yap.</p>
+                    
+                    <div class="settings-row">
+                        <span style="font-size:12px;">Alım Limiti: <b style="color:#5D3EB2" id="limit-val">50 TL</b></span>
+                    </div>
+                    <input type="range" min="10" max="200" step="10" value="50" class="limit-range" id="limit-slider" oninput="updateLimitText(this.value)">
+                </div>
+
+                <div class="settings-group">
+                    <p style="font-size:12px; font-weight:600; color:#6B7280; margin-bottom:8px;">YATIRIM ARACI SEÇİMİ</p>
+                    <div id="asset-list">
+                        </div>
+                </div>
+
+                <div class="quick-invest-card">
+                    <h3>Hızlı Yatırım</h3>
+                    <p style="font-size:12px; opacity:0.8; margin-bottom:10px;">Bekleyen nakiti hemen değerlendir.</p>
+                    <div style="font-size:20px; font-weight:700; margin-bottom:10px;" id="modal-pending">₺0,00</div>
+                    <button class="invest-btn" onclick="manualInvest()">Şimdi Yatır</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-house"></i>
-            <span>Ana Sayfa</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-wallet"></i>
-            <span>Cüzdan</span>
-        </a>
-        <a href="#" class="nav-item active-main" id="simulate-btn">
-            <div class="main-btn">
-                <i class="fa-solid fa-plus"></i>
-            </div>
-            <span>GetirLoop</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-user"></i>
-            <span>Profil</span>
-        </a>
-    </nav>
+    <script>
+        // ===== CONF & DATA =====
+        // Önceki projedeki markaları buraya entegre ettim
+        const MERCHANTS = [
+            { name: "GetirYemek - Burger King", category: "Yemek", icon: "fa-burger", style: "brand-food" },
+            { name: "BiTaksi - Yolculuk", category: "Ulaşım", icon: "fa-taxi", style: "brand-taxi" },
+            { name: "GetirBüyük - Market", category: "Market", icon: "fa-basket-shopping", style: "brand-getir" },
+            { name: "n11 - Teknoloji", category: "Alışveriş", icon: "fa-laptop", style: "brand-tech" },
+            { name: "GetirSu", category: "Su", icon: "fa-bottle-water", style: "brand-getir" },
+            { name: "Starbucks", category: "Kahve", icon: "fa-mug-hot", style: "brand-market" } // Yeşil stil
+        ];
 
-    <script src="app.js"></script>
+        const ASSETS = [
+            { code: 'TI1', name: 'TI1 Para Piyasası Fonu', risk: 'Düşük Risk' },
+            { code: 'GOLD', name: 'Altın (Gram)', risk: 'Orta Risk' },
+            { code: 'ISCTR', name: 'İş Bankası Hisse', risk: 'Yüksek Risk' }
+        ];
+
+        // State Init
+        let state = {
+            totalBalance: 14250.00,
+            loopInvested: parseFloat(localStorage.getItem('loop_invested')) || 240.50,
+            loopPending: parseFloat(localStorage.getItem('loop_pending')) || 12.45,
+            limit: parseInt(localStorage.getItem('limit')) || 50,
+            autoInvest: localStorage.getItem('autoInvest') !== 'false',
+            selectedAsset: localStorage.getItem('asset') || 'TI1',
+            transactions: JSON.parse(localStorage.getItem('transactions')) || []
+        };
+
+        // ===== FUNCTIONS =====
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 2500);
+        }
+
+        function saveState() {
+            localStorage.setItem('loop_invested', state.loopInvested);
+            localStorage.setItem('loop_pending', state.loopPending);
+            localStorage.setItem('limit', state.limit);
+            localStorage.setItem('autoInvest', state.autoInvest);
+            localStorage.setItem('asset', state.selectedAsset);
+            localStorage.setItem('transactions', JSON.stringify(state.transactions.slice(0, 50))); // Son 50 işlem
+            renderUI();
+        }
+
+        function toggleModal(show) {
+            const m = document.getElementById('settings-modal');
+            if (show) {
+                m.classList.add('active');
+                renderAssetList();
+            } else {
+                m.classList.remove('active');
+            }
+        }
+
+        function updateLimitText(val) {
+            state.limit = parseInt(val);
+            document.getElementById('limit-val').innerText = val + " TL";
+            saveState(); // Anlık kaydet
+        }
+
+        function selectAsset(code) {
+            state.selectedAsset = code;
+            renderAssetList();
+            saveState();
+            showToast(`Yatırım tercihi ${code} olarak güncellendi`);
+        }
+
+        // Ana İşlem: Harcama Simülasyonu
+        function simulateSpend() {
+            if (!document.getElementById('main-toggle').checked) {
+                showToast("GetirLoop kapalı!");
+                return;
+            }
+
+            // Rastgele Marka ve Tutar
+            const merch = MERCHANTS[Math.floor(Math.random() * MERCHANTS.length)];
+            const rawAmount = Math.random() * (400 - 30) + 30; // 30-400 TL arası
+            const amount = parseFloat(rawAmount.toFixed(2));
+
+            // Yuvarlama Mantığı (10'un katına)
+            const remainder = amount % 10;
+            let roundUp = 0;
+            if (remainder !== 0) {
+                roundUp = 10 - remainder;
+            }
+            roundUp = parseFloat(roundUp.toFixed(2));
+
+            // Bakiyeden düş
+            state.totalBalance -= (amount + roundUp);
+            state.loopPending += roundUp;
+
+            // İşlemi Ekle
+            const tx = {
+                id: Date.now(),
+                type: 'SPEND',
+                merchant: merch.name,
+                category: merch.category,
+                icon: merch.icon,
+                style: merch.style,
+                amount: amount,
+                roundUp: roundUp,
+                date: new Date()
+            };
+            
+            state.transactions.unshift(tx);
+
+            // Otomatik Yatırım Kontrolü
+            checkAutoInvest();
+
+            saveState();
+            showToast(`${merch.name} harcaması yuvarlandı: +${formatMoney(roundUp)} TL`);
+        }
+
+        function checkAutoInvest() {
+            if (state.autoInvest && state.loopPending >= state.limit) {
+                const amountToInvest = state.loopPending;
+                state.loopInvested += amountToInvest;
+                state.loopPending = 0;
+                
+                // Yatırım İşlemi Ekle
+                const invTx = {
+                    id: Date.now() + 1,
+                    type: 'INVEST',
+                    asset: state.selectedAsset,
+                    amount: amountToInvest,
+                    date: new Date()
+                };
+                state.transactions.unshift(invTx);
+                
+                setTimeout(() => {
+                    showToast(`Otomatik Yatırım: ${formatMoney(amountToInvest)} TL -> ${state.selectedAsset}`);
+                }, 1000); // Harcama toast'ından sonra çıksın
+            }
+        }
+
+        function manualInvest() {
+            if (state.loopPending < 1) {
+                showToast("Yatırım için yeterli nakit yok.");
+                return;
+            }
+            const amount = state.loopPending;
+            state.loopInvested += amount;
+            state.loopPending = 0;
+
+            const invTx = {
+                id: Date.now(),
+                type: 'INVEST',
+                asset: state.selectedAsset,
+                amount: amount,
+                date: new Date()
+            };
+            state.transactions.unshift(invTx);
+
+            saveState();
+            toggleModal(false);
+            showToast(`${formatMoney(amount)} TL Manuel Yatırıldı`);
+        }
+
+        // ===== RENDER =====
+        function renderUI() {
+            // Bakiyeler
+            document.getElementById('total-balance').innerText = formatMoney(state.totalBalance);
+            document.getElementById('loop-invested').innerText = formatMoney(state.loopInvested) + " TL";
+            document.getElementById('loop-pending').innerText = `(Nakit: ₺${formatMoney(state.loopPending)})`;
+            document.getElementById('modal-pending').innerText = `₺${formatMoney(state.loopPending)}`;
+            
+            // Limit Slider Sync
+            document.getElementById('limit-slider').value = state.limit;
+            document.getElementById('limit-val').innerText = state.limit + " TL";
+            document.getElementById('auto-invest-toggle').checked = state.autoInvest;
+
+            // Kırmızı Nokta (Pending varsa)
+            const dot = document.getElementById('pending-dot');
+            if (state.loopPending > 0) dot.classList.remove('hidden');
+            else dot.classList.add('hidden');
+
+            // Liste Render
+            const list = document.getElementById('transaction-list');
+            list.innerHTML = '';
+            
+            if (state.transactions.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.5; font-size:13px;">Henüz işlem yok. + butonuna bas.</div>';
+                return;
+            }
+
+            state.transactions.forEach(tx => {
+                const time = new Date(tx.date).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+                
+                let html = '';
+                if (tx.type === 'SPEND') {
+                    html = `
+                    <div class="transaction-item spend slide-in">
+                        <div class="t-icon ${tx.style}"><i class="fa-solid ${tx.icon}"></i></div>
+                        <div class="t-info">
+                            <div class="t-merchant">${tx.merchant}</div>
+                            <div class="t-meta">
+                                <span>${time}</span>
+                                ${tx.roundUp > 0 ? `<div class="t-kumbara"><i class="fa-solid fa-piggy-bank"></i> +${formatMoney(tx.roundUp)}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="t-amount-group">
+                            <span class="t-amount">-${formatMoney(tx.amount)} TL</span>
+                            <span class="t-card-type">GetirKart</span>
+                        </div>
+                    </div>`;
+                } else {
+                    html = `
+                    <div class="transaction-item investment slide-in">
+                        <div class="t-icon" style="background:#EDE9FE; color:#5D3EB2;"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="t-info">
+                            <div class="t-merchant">Fon Alımı - ${tx.asset}</div>
+                            <div class="t-meta">
+                                <span>${time}</span>
+                                <span>Otomatik Yatırım</span>
+                            </div>
+                        </div>
+                        <div class="t-amount-group">
+                            <span class="t-amount" style="color:#5D3EB2">+${formatMoney(tx.amount)} TL</span>
+                        </div>
+                    </div>`;
+                }
+                list.innerHTML += html;
+            });
+        }
+
+        function renderAssetList() {
+            const container = document.getElementById('asset-list');
+            container.innerHTML = '';
+            ASSETS.forEach(a => {
+                const isSelected = state.selectedAsset === a.code;
+                container.innerHTML += `
+                <div class="asset-option ${isSelected ? 'selected' : ''}" onclick="selectAsset('${a.code}')">
+                    <div class="fund-icon" style="width:32px; height:32px; font-size:14px; margin-right:10px; background:${isSelected ? '#fff' : '#f3f4f6'}">
+                        <i class="fa-solid ${a.code === 'GOLD' ? 'fa-coins' : (a.code === 'TI1' ? 'fa-sack-dollar' : 'fa-arrow-trend-up')}"></i>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-size:13px; font-weight:600;">${a.name}</div>
+                        <div style="font-size:10px; opacity:0.7;">${a.risk}</div>
+                    </div>
+                    ${isSelected ? '<i class="fa-solid fa-circle-check" style="color:var(--getir-purple)"></i>' : ''}
+                </div>`;
+            });
+        }
+
+        // Init
+        window.onload = () => {
+            renderUI();
+            // Animasyonlu giriş için ufak bir trick
+            setTimeout(() => {
+                document.querySelector('.app-container').style.opacity = 1;
+            }, 100);
+        };
+
+    </script>
 </body>
-
 </html>
